@@ -18,6 +18,7 @@ public class test {
 	   }
 	   public static void main(String[] args){
 		   test swingControlDemo = new test();  
+		  System.out.println(saveFile.getFileDetail("C:\\Users\\Administrator\\Documents\\MD1.docx")[2]);
 	          
 	   }
 	   private void prepareGUI(){

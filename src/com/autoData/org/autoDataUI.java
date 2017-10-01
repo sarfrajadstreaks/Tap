@@ -47,7 +47,12 @@ public class autoDataUI {
 	private void prepareGUI(){
 		
 		//Create a window frame only
-		mainFrame = new JFrame("AutoData");
+		
+		
+		mainFrame = new JFrame("Tap");
+		System.out.println(System.getProperty("user.dir"));
+		ImageIcon img = new ImageIcon(System.getProperty("user.dir")+"\\tap.png");
+		mainFrame.setIconImage(img.getImage());
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double width = screenSize.getWidth();
@@ -190,12 +195,19 @@ public class autoDataUI {
 					
 					tabbedPane.removeAll();
 					File fs=fc.getSelectedFile();
-					filename=fs.toString();
+					
+					filename=fs.toString();//S.replace("\\", "/");
+					//saveFile.getFileDetail(filename);
+					//System.out.println(saveFile.getFileDetail(filename)[2]);
+					/*if(!saveFile.getFileDetail(filename)[2].equals("tap")){
+						JOptionPane.showMessageDialog(mainFrame, "Invalid file formate");
+					}
+					else*/
 					try {
 						String content=readFile.readit(filename);
 						//System.out.println(content);
 						String tmp[]=content.split("\n");
-						if(tmp[0].equals("839711410211497106")){
+						if(tmp[0].equals("839711410211497106") && saveFile.getFileDetail(filename)[2].equals("tap")){
 							
 							for(int i=1;i<tmp.length;i++)
 							{
@@ -413,9 +425,9 @@ public class autoDataUI {
 		});
 		
 
-		mainFrame.setSize((int)width,(int)height-25);
+		mainFrame.setSize((int)width/2+50,(int)height-30);
 
-
+		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setVisible(true);  
 	}
 	JComboBox addCompDCombo;
