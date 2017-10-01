@@ -36,6 +36,7 @@ public class autoDataUI {
 	private ArrayList<String>tabsAdded=new ArrayList();
 	private ArrayList<String>tabsBackend=new ArrayList();
 	private ArrayList<String>componentAdded=new ArrayList();
+	JButton commit=new JButton("Commit");
 	JScrollPane png;
 	JFileChooser fc=new JFileChooser();
 	readWriteExcel commitexcel=new readWriteExcel();
@@ -52,9 +53,25 @@ public class autoDataUI {
 		double width = screenSize.getWidth();
 		double height = screenSize.getHeight();
 		//buttons
-		JButton addComp=new JButton("<html><b>+<b></html>");
+		JButton addComp=new JButton("<html><h1 style='color:green'>+</h1></html>");
+		
+		addComp.setToolTipText("Add Tabs/Components");
+		addComp.setMargin(new Insets(-19,10,-13,10));
+		//addComp.setOpaque(false);
+		addComp.setBackground(Color.white);
+		addComp.setContentAreaFilled(false);
+		addComp.setOpaque(true);
+		//addComp.setBorder(null);
+		
 		JButton setting=new JButton("Setting");
-		JButton commit=new JButton("Commit");
+		setting.setBackground(Color.white);
+		setting.setContentAreaFilled(false);
+		setting.setOpaque(true);
+		
+		commit.setBackground(Color.white);
+		commit.setContentAreaFilled(false);
+		commit.setOpaque(true);
+		commit.setEnabled(false);
 		//Dialog
 
 		addCompD= new JDialog(mainFrame , "Add Component", true);
@@ -105,14 +122,11 @@ public class autoDataUI {
 		panelCenterParent.add(tabbedPane);
 		png = new JScrollPane(panelCenterParent);
 
-		panelSouth.add(new JButton("South"));
+		//panelSouth.add(new JButton("South"));
 
 		mainFrame.add(panelNorth,BorderLayout.NORTH);
 		mainFrame.add(png,BorderLayout.CENTER);
 		mainFrame.add(panelSouth,BorderLayout.SOUTH);
-
-		
-		
 		
 		mainFrame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent){
@@ -133,7 +147,9 @@ public class autoDataUI {
 				tabsAdded.clear();
 				tabsBackend.clear();
 				componentAdded.clear();
+				commit.setEnabled(false);
 			}
+			
 		});
 		fileMenu_save.addActionListener(new ActionListener()
 		{
@@ -147,7 +163,7 @@ public class autoDataUI {
 		{
 			public void actionPerformed(ActionEvent e) {
 				//addCompD.setVisible(true);// TODO Auto-generated method stub
-				
+					
 					fc.setDialogTitle("Save File As..");
 					int us=fc.showSaveDialog(mainFrame);
 					if(us==fc.APPROVE_OPTION){
@@ -498,7 +514,7 @@ public class autoDataUI {
 		gbc.gridx=0;
 		gbc.gridy=8;
 		gbc.anchor=GridBagConstraints.WEST;
-		JLabel dbTableL=new JLabel("Data Table:");
+		JLabel dbTableL=new JLabel("Data Table");
 		addCompD.add(dbTableL,gbc);
 		dbTableL.setVisible(false);
 
@@ -695,6 +711,10 @@ public class autoDataUI {
 					String temp[]=componentAdded.get(i).split(":");
 					if(temp[0].equals(tabbedPane.getSelectedIndex()+"-"+index)){
 						componentAdded.remove(i);
+						commit.setEnabled(true);
+						if(componentAdded.isEmpty()){
+							commit.setEnabled(false);
+						}
 						break;
 					}
 				}
@@ -769,8 +789,13 @@ public class autoDataUI {
 		componentAdded.add(tabbedPane.getSelectedIndex()+"-"+i+":"+addedDbText);
 		componentAdded.add(tabbedPane.getSelectedIndex()+"-"+i+":"+addedXPosition);
 		componentAdded.add(tabbedPane.getSelectedIndex()+"-"+i+":"+addedYPosition);
+		commit.setEnabled(true);
+		if(componentAdded.isEmpty()){
+			
+		}
 		addCompD.dispose();
-		mainFrame.validate();	
+		mainFrame.validate();
+		
 	}
 
 	private String settingFileType,settingPath,settingFilename;
@@ -1051,6 +1076,10 @@ public class autoDataUI {
 		componentAdded.add(tabbedPane.getSelectedIndex()+"-"+i+":"+addedYPosition);
 	}
 	private void saveFile(){
+		
+		if(settingSettings.isEmpty()){
+			settingCompD.setVisible(true);
+		}
 		if(filename==null){
 			fc.setDialogTitle("Save File..");
 			int us=fc.showSaveDialog(mainFrame);
