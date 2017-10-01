@@ -32,7 +32,15 @@ public class test {
 	      panelCenterParent= new JPanel();
 	      
 	      panelNorth.add(new JButton("North"));
+	      JRadioButton btn=new JRadioButton("Male");
+	      JRadioButton btn1=new JRadioButton("Female");
+	      btn1.setSelected(true);
+	      ButtonGroup grp=new ButtonGroup();
+	      grp.add(btn);grp.add(btn1);
 	      
+	      panelNorth.add(btn);
+	      panelNorth.add(btn1);
+	      System.out.println(btn1.isSelected());
 	      panelCenter.setLayout(new GridBagLayout());
 	      GridBagConstraints gbc=new GridBagConstraints();
 	      for(int i=1;i<50;i++){
@@ -58,6 +66,7 @@ public class test {
 	      menuBar.add(new JMenu("File"));
 		  menuBar.add(new JMenu("Edit"));
 			
+		//mainFrame.add(btn, gbc);
 	      mainFrame.setSize(800,700);
 	     //mainFrame.setLayout(new BorderLayout ());
 	     mainFrame.setJMenuBar(menuBar);

@@ -38,6 +38,7 @@ public class autoDataUI {
 	private ArrayList<String>componentAdded=new ArrayList();
 	JScrollPane png;
 	JFileChooser fc=new JFileChooser();
+	readWriteExcel commitexcel=new readWriteExcel();
 	public autoDataUI(){
 
 		prepareGUI();
@@ -275,43 +276,107 @@ public class autoDataUI {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				saveFile();
-				/*String content=readFile.readit(filename);
+				String content = null;
+				try {
+					content = readFile.readit(filename);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				String tmp[]=content.split("\n");
 				tmp[1]=tmp[1].replaceAll("\\[", "");
 				tmp[1]=tmp[1].replaceAll("\\]", "");
 				String filedetail[]=tmp[1].split(",");
-				String ext=filedetail[0];
-				String pathF=filedetail[1];
-				String nmFile=filedetail[2];
+				String ext=filedetail[0].trim();
+				String pathF=filedetail[1].trim();
+				String nmFile=filedetail[2].trim();
+				String absolutefile=pathF+nmFile+"."+ext;
+				System.out.println("File:"+absolutefile.trim());
 				
 				tmp[4]=tmp[4].replaceAll("\\[", "");
 				tmp[4]=tmp[4].replaceAll("\\]", "");
-				String sheets[]=tmp[4].split(",");
+				String sheets[]=tmp[4].trim().split(",");
+				System.out.println("Sheets:"+sheets[0].trim()+","+sheets[1].trim());
 				
 				tmp[3]=tmp[3].replaceAll("\\[", "");
 				tmp[3]=tmp[3].replaceAll("\\]", "");
 				String colname[]=tmp[3].split(",");
 				int steps=0;
-				for(int i=2;i<colname.length;i=i+5){
+				ArrayList<String>elements=new ArrayList();
+				ArrayList<String>elementDbRef=new ArrayList();
+				//ArrayList<String>elementTabRef=new ArrayList();
+				for(int i=0;i<colname.length;i=i+5){
 					
-				}*/
+					String ttemp[]=colname[i].trim().split(":");
+					if(ttemp[1].contains("Label") && i%5==0)
+					{
+						
+					}
+					else if((i+2)<colname.length){
+						String tabreff[]=ttemp[0].trim().split("-");
+						if (Integer.parseInt(tabreff[0].trim())==tabbedPane.getSelectedIndex()){
+							//tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+							//elements.add(tabreff[0].trim()+"~"+ttemp[1].trim());
+							String ttempp[]=colname[i+2].split(":");
+							String tabreff1[]=ttempp[0].split("-");
+							elementDbRef.add(ttempp[1].trim());
+						}
+					}
+					
+				}
+				ArrayList<String>appComp=new ArrayList();
+				ArrayList<String>appCompValue=new ArrayList();
+				
 				Component c[]=tabbedFirstComp.get(tabbedPane.getSelectedIndex()).getComponents();
 				for(int i=0;i<c.length;i++){
-					//System.out.println(c[i]);
 					JPanel xc=(JPanel) c[i];
 					Component ccc[]=xc.getComponents();
 					for(int j=0;j<ccc.length;j++){
 						if(ccc[j] instanceof JLabel){
 							
 						}
-						else if(ccc[j] instanceof JTextField){
-							JTextField val=(JTextField) ccc[j];
-							System.out.println(val.getText());
+						else{
+							 if(ccc[j] instanceof JTextField){
+								 //appComp.add(tabbedPane.getSelectedIndex()+"~TextField");
+								 JTextField val=(JTextField) ccc[j];
+								 appCompValue.add(val.getText());
+								
+							 }
+							 else  if(ccc[j] instanceof JCheckBox){
+								 //appComp.add(tabbedPane.getSelectedIndex()+"~CheckBox");
+								 JCheckBox val=(JCheckBox) ccc[j];
+								if(val.isSelected()){
+									appCompValue.add("Check");
+								}
+								else{
+									appCompValue.add("UnCheck");
+								}
+								 
+							 }
+							 else if(ccc[j] instanceof JRadioButton){
+								 //appComp.add(tabbedPane.getSelectedIndex()+"~RadioButton");
+								 JRadioButton val=(JRadioButton) ccc[j];
+								 if(val.isSelected()){
+									   appCompValue.add("ON");
+									}
+								 else
+									 appCompValue.add("OFF");
+							 }
 						}
 						
 					}
 				}
-				
+				//System.out.println(appComp);
+				System.out.println(appCompValue);
+				//System.out.println(elements);
+				System.out.println(elementDbRef);
+				try {
+					commitexcel.readWriteXLSX(absolutefile.trim(), sheets[tabbedPane.getSelectedIndex()].trim(), elementDbRef, appCompValue);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//new readWriteExcel().readWriteXLSX(absolutefile.trim(), sheetToUpdate, header, value);
 			}
 		});
 		addComp.addActionListener(new ActionListener()
@@ -354,7 +419,7 @@ public class autoDataUI {
 		//gbc.gridwidth=2;
 		addCompD.add(new JLabel("All fields are mandatory"),gbc);
 
-		String addCompDialogComponents[]={"TextField","TextArea","CheckBox","RadioButton","Label","New Tab"};
+		String addCompDialogComponents[]={"TextField","CheckBox","RadioButton","Label","New Tab"};
 		//addCompDCombo.addItem(addCompDialogComponents);
 		addCompDCombo=new JComboBox(addCompDialogComponents);
 		addCompDCombo.setPreferredSize(new Dimension(200, 20));
@@ -582,6 +647,8 @@ public class autoDataUI {
 
 	}
 	Object Source = null;
+	String radiobuttonGroup = null;
+	ArrayList<ButtonGroup> btngrp=new ArrayList();
 	private void addComponentToMainPanel(newComponentToAdd newPanel)
 	{
 
@@ -643,31 +710,44 @@ public class autoDataUI {
 				addCompD.setVisible(true);
 			}  
 		});*/
-
+		
 		newPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		if(	addedComp.equals("TextField")){
 			newPanel.add(new JLabel("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>"));
 			newPanel.add(new JTextField(20));
+			radiobuttonGroup=null;
+			btngrp.clear();//.remove(0);
 		}
-		else if(addedComp.equals("TextArea"))
-		{
-			newPanel.add(new JLabel("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>"));
-			newPanel.add(new JTextArea());
-		}
+		
 		else if(addedComp.equals("CheckBox")){
 			newPanel.add(new JLabel("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>"));
 			newPanel.add(new JCheckBox());
-
+			radiobuttonGroup=null;
+			btngrp.clear();
 		}
+		
 		else if(addedComp.equals("RadioButton"))
 		{
-			newPanel.add(new JLabel("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>"));
-			newPanel.add(new JRadioButton());
+			JRadioButton rbtn=new JRadioButton("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>");
+			btngrp.add(new ButtonGroup());
+			
+			if(radiobuttonGroup!=null && radiobuttonGroup.equals(addedDbText)){
+				btngrp.get(0).add(rbtn);
+			}
+			else{
+				//btngrp.get(0)=new ButtonGroup();
+				btngrp.get(0).add(rbtn);
+			}
+			//newPanel.add(new JLabel("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>"));
+			newPanel.add(rbtn);
+			radiobuttonGroup=addedDbText;
 		}
 		else if(addedComp.equals("Label"))
 		{
 			newPanel.add(new JLabel("<html><p>"+addedLabelText+"<sub>"+addedXPosition+","+addedYPosition+"</sub></p></html>"));
 			addedDbText="nullValue";
+			radiobuttonGroup=null;
+			btngrp.clear();
 			//newPanel.add(new JTextArea());
 		}
 		gbc.gridx=Integer.parseInt(addedXPosition);
